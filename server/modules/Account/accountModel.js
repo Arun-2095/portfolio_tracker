@@ -10,12 +10,16 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      const {Expense} = models;
+      const { Expense, ExpenseCategory } = models;
       // define association here
       this.hasMany(Expense,{
           foreignKey:'account_id',
           allowNull: false 
        })
+
+          this.hasMany(ExpenseCategory, {
+            allowNull: false,
+          });
     }
   }
   Account.init({

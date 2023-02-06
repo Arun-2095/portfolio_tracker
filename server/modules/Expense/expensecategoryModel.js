@@ -10,13 +10,15 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      const { Expense} = models;
+      const { Expense, Account } = models;
 
-      this.belongsTo(Expense, {
-        foreignKey:{
-          allowNull: false
-        }
-      });
+      this.hasOne(Expense);
+
+       this.belongsTo(Account, {
+         foreignKey: {
+           allowNull: false,
+         },
+       });
       // define association here
     }
   }
