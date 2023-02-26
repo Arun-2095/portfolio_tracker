@@ -9,17 +9,20 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate(models) {
-      const { Expense, ExpenseCategory } = models;
+    static associate (models) {
+      console.log(models, 'models');
+      const { Expense, ExpenseCategory, User } = models;
       // define association here
-      this.hasMany(Expense,{
-          foreignKey:'account_id',
-          allowNull: false 
-       })
+      this.hasMany(Expense, {
+        foreignKey: 'account_id',
+        allowNull: false
+      });
 
-          this.hasMany(ExpenseCategory, {
-            allowNull: false,
-          });
+      this.hasMany(ExpenseCategory, {
+        allowNull: false
+      });
+
+      this.belongsToMany(User, { through: 'Portfolio' });
     }
   }
   Account.init({
@@ -27,10 +30,10 @@ module.exports = (sequelize, DataTypes) => {
     totalIncome: DataTypes.INTEGER,
     totalExpense: DataTypes.INTEGER,
     savingPercentage: DataTypes.INTEGER,
-    investmentPercentag: DataTypes.INTEGER
+    investmentPercentage: DataTypes.INTEGER
   }, {
     sequelize,
-    modelName: 'Account',
+    modelName: 'Account'
   });
   return Account;
 };

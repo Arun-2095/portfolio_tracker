@@ -38,7 +38,12 @@ const getModels = (dir) => {
 
 getModels(path.dirname(__dirname)).forEach((file) => {
     
-    const model = require(file)(sequelize, Sequelize.DataTypes);
+    const model = require(file)(sequelize, Sequelize.DataTypes)
+
+    model.addHook('beforeValidate', (model, options) => {
+      
+      console.log(model, options,"CHECK")
+    });
   
     db[model.name] = model;
   });

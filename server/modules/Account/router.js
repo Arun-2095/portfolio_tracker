@@ -1,11 +1,14 @@
-const express = require("express");
+const express = require('express');
 const accountRouter = express.Router();
 
-const Authorization = requireWrapper("middleware/Authorization");
+const Authorization = requireWrapper('middleware/Authorization');
 
-const {GetAccountDetails} = require("./accountController")
+const { GetAccountDetails, createAccount } = require('./accountController');
 
-accountRouter.get("/", Authorization.verifyToken, GetAccountDetails);
+accountRouter.use(Authorization.verifyToken);
 
+accountRouter.get('/', GetAccountDetails);
+
+accountRouter.post('/', createAccount);
 
 module.exports = accountRouter;
