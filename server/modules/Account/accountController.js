@@ -1,5 +1,6 @@
-const { Portfolio: PortfolioModel, Account: AccountModel, User: UserModel } = requireWrapper('models');
+const { Account: AccountModel, User: UserModel, sequelize } = requireWrapper('models');
 
+const { INCOME, EXPENSE } = requireWrapper('utils/constants/defaultData.js');
 async function GetAccountDetails (request, response) {
   const { user: { id } } = request.userData;
   const account = await UserModel.findOne({
@@ -11,10 +12,8 @@ async function GetAccountDetails (request, response) {
     }]
   });
   if (account === null) {
-    response.send(new ErrorBuilder(400, 'There is No Accounts', err.message));
+    response.send(new ErrorBuilder(400, 'There is No Accounts', 'something went wrong'));
   } else {
-    console.log(account instanceof PortfolioModel); // true
-    console.log(account); // 'My Title'
     response.send({ message: 'account Detailsy', data: account });
   }
 }
@@ -25,17 +24,36 @@ const createAccount = async (request, response) => {
   const { name, savingPercentage, investmentPercentage } = request.body;
 
   try {
-    const currentUser = await UserModel.findOne({ where: { id } });
+    const result = await sequelize.transaction(async (t) => {
+      const currentUser = await UserModel.findOne({ where: { id } }, { transaction: t });
 
-    const userAccount = await AccountModel.create({
-      name, savingPercentage, investmentPercentage
+      const expenses = EXPENSE.map(category => ({ category }));
+
+      const incomes = INCOME.map((category) => ({ category, amount: null }));
+
+      const userAccount = await AccountModel.create({
+        name,
+        savingPercentage,
+        investmentPercentage
+      }, {
+        transaction: t
+      });
+
+      for (const expense of expenses) {
+        await userAccount.createExpense(expense, { transaction: t });
+      }
+
+      for (const income of incomes) {
+        await userAccount.createIncome(income, { transaction: t });
+      }
+      await currentUser.addAccount(userAccount, { transaction: t });
+
+      return userAccount;
     });
 
-    await userAccount.addUser(currentUser);
-
-    response.send({ message: 'account Details', data: { userAccount } });
-  } catch (err) {
-    response.send(new ErrorBuilder(422, 'some thing went wrong', err));
+    response.send({ message: 'account Details', data: { userAccount: result } });
+  } catch (error) {
+    response.send(new ErrorBuilder(422, 'some thing went wrong', error.message));
   }
 };
 

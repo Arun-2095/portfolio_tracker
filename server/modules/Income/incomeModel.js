@@ -9,15 +9,17 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate ({ IncomeCategory, Account }) {
+    static associate ({ Account }) {
       this.belongsTo(Account);
 
-      this.belongsTo(IncomeCategory);
+      // this.belongsTo(IncomeCategory);
       // define association here
     }
   }
   Income.init({
-    amount: DataTypes.INTEGER
+    amount: DataTypes.STRING,
+    category: DataTypes.STRING
+
   }, {
     sequelize,
     modelName: 'Income'

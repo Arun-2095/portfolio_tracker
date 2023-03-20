@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 require('dotenv').config();
 require('./utils/globalMethods');
 const Express = require('express');
@@ -7,6 +8,8 @@ const userRouter = requireWrapper('modules/User/router.js');
 
 const accountRouter = requireWrapper('modules/Account/router.js');
 
+const incomeRouter = requireWrapper('modules/Income/router.js');
+
 const App = Express();
 
 App.use(Express.json());
@@ -14,6 +17,8 @@ App.use(Express.json());
 App.use('/auth', userRouter);
 
 App.use('/account', accountRouter);
+
+App.use('/income', incomeRouter);
 
 App.listen(process.env.SERVER_PORT, () => {
   console.log(`Server running in ${process.env.SERVER_PORT}`);
@@ -26,7 +31,7 @@ App.listen(process.env.SERVER_PORT, () => {
       }).catch(function (err) {
         console.log(err);
       }); ;
-  }).catch(function (ee) {
+  }).catch(function (err) {
     console.log(err);
   });
 });

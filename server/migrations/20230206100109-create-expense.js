@@ -3,24 +3,25 @@
 module.exports = {
   async up (queryInterface, Sequelize) {
     const transaction = await queryInterface.sequelize.transaction();
+
     try {
-      await queryInterface.createTable('Investments', {
+      await queryInterface.createTable('Expenses', {
         id: {
           allowNull: false,
           autoIncrement: true,
           primaryKey: true,
           type: Sequelize.INTEGER
         },
-        amount: {
+        description: {
           type: Sequelize.STRING
         },
-        description: {
+        amount: {
           type: Sequelize.STRING
         },
         category: {
           type: Sequelize.STRING
         },
-        accountId: {
+        AccountId: {
           type: Sequelize.INTEGER,
           reference: {
             model: 'Accounts',
@@ -35,8 +36,9 @@ module.exports = {
           allowNull: false,
           type: Sequelize.DATE
         }
-      });
-      queryInterface.addConstraint('Investments', {
+      }, { transaction });
+
+      queryInterface.addConstraint('Expenses', {
         fields: ['AccountId'],
         type: 'foreign key',
         references: {
@@ -58,9 +60,9 @@ module.exports = {
     const transaction = Sequelize.transaction();
 
     try {
-      await queryInterface.dropTable('Investments');
+      await queryInterface.dropTable('Expenses');
 
-      await queryInterface.removeConstraint('Investments', {
+      await queryInterface.removeConstraint('Expenses', {
         fields: ['AccountId'],
         type: 'foreign key',
         references: {

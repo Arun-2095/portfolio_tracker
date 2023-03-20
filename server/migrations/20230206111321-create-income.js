@@ -3,8 +3,9 @@
 module.exports = {
   async up (queryInterface, Sequelize) {
     const transaction = await queryInterface.sequelize.transaction();
+
     try {
-      await queryInterface.createTable('Investments', {
+      await queryInterface.createTable('Incomes', {
         id: {
           allowNull: false,
           autoIncrement: true,
@@ -14,18 +15,15 @@ module.exports = {
         amount: {
           type: Sequelize.STRING
         },
-        description: {
-          type: Sequelize.STRING
-        },
-        category: {
-          type: Sequelize.STRING
-        },
-        accountId: {
+        AccountId: {
           type: Sequelize.INTEGER,
           reference: {
             model: 'Accounts',
             key: 'id'
           }
+        },
+        category: {
+          type: Sequelize.STRING
         },
         createdAt: {
           allowNull: false,
@@ -35,8 +33,9 @@ module.exports = {
           allowNull: false,
           type: Sequelize.DATE
         }
-      });
-      queryInterface.addConstraint('Investments', {
+      }, { transaction });
+
+      await queryInterface.addConstraint('Incomes', {
         fields: ['AccountId'],
         type: 'foreign key',
         references: {
@@ -51,16 +50,15 @@ module.exports = {
       await transaction.commit();
     } catch (error) {
       await transaction.rollback();
-      throw error;
     }
   },
   async down (queryInterface, Sequelize) {
     const transaction = Sequelize.transaction();
 
     try {
-      await queryInterface.dropTable('Investments');
+      await queryInterface.dropTable('Incomes');
 
-      await queryInterface.removeConstraint('Investments', {
+      await queryInterface.removeConstraint('Incomes', {
         fields: ['AccountId'],
         type: 'foreign key',
         references: {
@@ -72,6 +70,7 @@ module.exports = {
       }, {
         transaction
       });
+
       await transaction.commit();
     } catch (error) {
       await transaction.rollback();

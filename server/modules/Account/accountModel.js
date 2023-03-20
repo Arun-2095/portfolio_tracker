@@ -11,16 +11,11 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate (models) {
       console.log(models, 'models');
-      const { Expense, ExpenseCategory, User } = models;
+      const { Expense, User, Income } = models;
       // define association here
-      this.hasMany(Expense, {
-        foreignKey: 'account_id',
-        allowNull: false
-      });
+      this.hasMany(Expense);
 
-      this.hasMany(ExpenseCategory, {
-        allowNull: false
-      });
+      this.hasMany(Income);
 
       this.belongsToMany(User, { through: 'Portfolio' });
     }
