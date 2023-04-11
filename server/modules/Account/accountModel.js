@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
 
       this.hasMany(Income);
 
-      this.belongsToMany(User, { through: 'Portfolio' });
+      this.belongsToMany(User, { through: 'Portfolio', hooks: true });
     }
   }
   Account.init({
@@ -25,7 +25,8 @@ module.exports = (sequelize, DataTypes) => {
     totalIncome: DataTypes.INTEGER,
     totalExpense: DataTypes.INTEGER,
     savingPercentage: DataTypes.INTEGER,
-    investmentPercentage: DataTypes.INTEGER
+    investmentPercentage: DataTypes.INTEGER,
+    isSelected: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'Account'

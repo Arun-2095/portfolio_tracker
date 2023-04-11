@@ -21,6 +21,14 @@ module.exports = (sequelize, DataTypes) => {
     category: DataTypes.STRING
 
   }, {
+    hooks: {
+      afterCreate: (record) => {
+        delete record.dataValues.AccountId;
+      },
+      afterUpdate: (record) => {
+        delete record.dataValues.AccountId;
+      }
+    },
     sequelize,
     modelName: 'Income'
   });

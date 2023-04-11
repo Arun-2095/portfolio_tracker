@@ -1,5 +1,5 @@
 const { Account: AccountModel, User: UserModel, sequelize } = requireWrapper('models');
-
+const { Op } = require('sequelize');
 const { INCOME, EXPENSE } = requireWrapper('utils/constants/defaultData.js');
 async function GetAccountDetails (request, response) {
   const { user: { id } } = request.userData;
@@ -31,10 +31,23 @@ const createAccount = async (request, response) => {
 
       const incomes = INCOME.map((category) => ({ category, amount: null }));
 
+      const existingUserAccount = await currentUser.getAccounts({
+        attributes: ['id'],
+        where: { isSelected: true }
+      }, { transaction: t });
+
+      const ids = existingUserAccount.map((data) => data.id?.toString());
+
+      await AccountModel.update({ isSelected: false }, {
+        where: {
+          [Op.or]: { id: ids }
+        }
+      }, { transaction: t });
       const userAccount = await AccountModel.create({
         name,
         savingPercentage,
-        investmentPercentage
+        investmentPercentage,
+        isSelected: true
       }, {
         transaction: t
       });
@@ -47,7 +60,7 @@ const createAccount = async (request, response) => {
         await userAccount.createIncome(income, { transaction: t });
       }
       await currentUser.addAccount(userAccount, { transaction: t });
-
+      // const accounts = await currentUser.getAccounts({ joinTableAttributes: [], where: { id: 11 } });
       return userAccount;
     });
 

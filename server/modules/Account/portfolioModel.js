@@ -9,15 +9,15 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate(models) {
+    static associate (models) {
       // define association here
     }
   }
   Portfolio.init({
   }, {
-    sequelize,
     tableName: 'portfolio',
-    modelName: 'Portfolio'
+    modelName: 'Portfolio',
+    sequelize
   });
   return Portfolio;
 };
