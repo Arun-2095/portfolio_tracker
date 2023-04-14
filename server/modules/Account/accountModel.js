@@ -10,12 +10,13 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate (models) {
-      console.log(models, 'models');
-      const { Expense, User, Income } = models;
+      const { Expense, User, Income, incomeCategory } = models;
       // define association here
       this.hasMany(Expense);
 
       this.hasMany(Income);
+
+      this.hasMany(incomeCategory);
 
       this.belongsToMany(User, { through: 'Portfolio', hooks: true });
     }

@@ -1,6 +1,32 @@
 const { Account: AccountModel, User: UserModel, sequelize } = requireWrapper('models');
 const { Op } = require('sequelize');
 const { INCOME, EXPENSE } = requireWrapper('utils/constants/defaultData.js');
+
+async function getActiveAccount (request, response, next) {
+  const { user: { id, Accounts = [] } } = request.userData;
+
+  const AccountId = Accounts[0]?.id;
+  if (AccountId) {
+    next();
+  } else {
+    const account = await UserModel.findOne({
+      where: { id },
+      attributes: ['id'],
+      include: [{
+        model: AccountModel,
+        where: { isSelected: true },
+        through: { attributes: [] }
+      }]
+    });
+
+    if (account) {
+      request.userData.user.Accounts = account.Accounts;
+      next();
+    } else {
+      response.send(new ErrorBuilder(400, 'There are No Accounts', 'please create account'));
+    }
+  }
+}
 async function GetAccountDetails (request, response) {
   const { user: { id } } = request.userData;
   const account = await UserModel.findOne({
@@ -57,7 +83,11 @@ const createAccount = async (request, response) => {
       }
 
       for (const income of incomes) {
-        await userAccount.createIncome(income, { transaction: t });
+        const incomeCategory = await userAccount.createIncomeCategory({ name: income.category, AccountId: userAccount.id }, { transaction: t });
+        await userAccount.createIncome({
+          amount: income.amount,
+          incomeCategoryId: incomeCategory.id
+        }, { transaction: t });
       }
       await currentUser.addAccount(userAccount, { transaction: t });
       // const accounts = await currentUser.getAccounts({ joinTableAttributes: [], where: { id: 11 } });
@@ -70,4 +100,4 @@ const createAccount = async (request, response) => {
   }
 };
 
-module.exports = { GetAccountDetails, createAccount };
+module.exports = { GetAccountDetails, createAccount, getActiveAccount };

@@ -3,22 +3,22 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Income extends Model {
+  class incomeCategory extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate ({ Account, incomeCategory }) {
+    static associate ({ Income, Account }) {
+      this.hasMany(Income, { onDelete: 'CASCADE' });
       this.belongsTo(Account);
-      this.belongsTo(incomeCategory);
+
       // this.belongsTo(IncomeCategory);
       // define association here
     }
   }
-  Income.init({
-    amount: DataTypes.STRING
-
+  incomeCategory.init({
+    name: DataTypes.STRING
   }, {
     hooks: {
       afterCreate: (record) => {
@@ -29,7 +29,7 @@ module.exports = (sequelize, DataTypes) => {
       }
     },
     sequelize,
-    modelName: 'Income'
+    modelName: 'incomeCategory'
   });
-  return Income;
+  return incomeCategory;
 };

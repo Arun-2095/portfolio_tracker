@@ -1,7 +1,6 @@
 
-const { Income, sequelize } = requireWrapper('models');
+const { Income, incomeCategory: incomeCategoryModel, sequelize } = requireWrapper('models');
 
-const { Op } = require('sequelize');
 async function getIncomes (request, response) {
   const { user: { Accounts = [] } } = request.userData;
 
@@ -9,7 +8,10 @@ async function getIncomes (request, response) {
   // console.log(JSON.stringify(Accounts), 'USERDATA');
   try {
     const income = await Income.findAll({
-      attributes: ['id', 'amount', 'category'],
+      attributes: {
+
+        exclude: ['AccountId']
+      },
       where: { AccountId }
 
     });
@@ -25,48 +27,79 @@ async function getIncomes (request, response) {
 
 async function createIncomes (request, response) {
   const { user: { Accounts = [] } } = request.userData;
+  const { amount, categoryId } = request.body;
 
-  const { amount, category } = request.body;
-
-  const AccountId = Accounts[0]?.id || null;
+  const AccountId = Accounts[0]?.id;
 
   try {
-    const isCategoryExists = await Income.findOne({ where: { AccountId, category } });
+    const result = await sequelize.transaction(async (t) => {
+      const isIncomeCategoryExists = await incomeCategoryModel.findOne({ where: { AccountId, id: categoryId } }, { transaction: t });
 
-    if (isCategoryExists == null) {
-      const income = await Income.create({
-        amount, category, AccountId
-      }, { exclude: ['AccountId'] });
-      response.send({ message: 'income details added', income });
-    } else {
-      response.send(new ErrorBuilder(400, 'something went wrong', 'category Already exists'));
-    }
+      console.log(isIncomeCategoryExists, 'isIncomeExists');
+      if (isIncomeCategoryExists != null) {
+        const incomes = await Income.create({ AccountId, amount, incomeCategoryId: categoryId }, { transaction: t });
+        return incomes;
+      } else {
+        throw new Error('there is no such category exists');
+      }
+
+      // return isIncomeExists;
+    });
+    response.send({ message: 'income details added', result });
   } catch (err) {
-    response.send(new ErrorBuilder(400, 'There is No income Exist', err || err?.message));
+    response.send(new ErrorBuilder(400, err?.message, err));
   }
 }
 
 async function updateIncome (request, response) {
   const { user: { Accounts = [] } } = request.userData;
 
-  const { id, amount } = request.body;
-
   const AccountId = Accounts[0]?.id || null;
 
-  try {
-    const isCategoryExists = await Income.findOne({ where: { AccountId, id } });
+  const { amount } = request.body;
 
-    if (isCategoryExists != null) {
-      const income = await Income.update({
-        amount
-      });
-      response.send({ message: 'income details added', income });
+  const { id } = request.params;
+
+  try {
+    const isIncomeExists = await Income.findOne({
+      attributes: {
+        exclude: ['AccountId', 'incomeCategoryId']
+      },
+      where: { AccountId, id }
+    });
+
+    if (isIncomeExists != null) {
+      isIncomeExists.amount = amount;
+
+      isIncomeExists.save();
+
+      response.status(204).send({ message: 'income details are updated', income: isIncomeExists });
     } else {
-      response.send(new ErrorBuilder(400, 'something went wrong', 'category doesn\'t exists'));
+      response.send(new ErrorBuilder(400, 'something went wrong', 'income doesn\'t exists'));
     }
   } catch (err) {
     response.send(new ErrorBuilder(400, 'There is issues Exist', err || err?.message));
   }
 }
 
-module.exports = { getIncomes, createIncomes, updateIncome };
+async function deleteIncome (request, response) {
+  const { user: { Accounts = [] } } = request.userData;
+
+  const { id } = request.params;
+
+  const AccountId = Accounts[0]?.id || null;
+
+  try {
+    const isIncomeDeleted = await Income.destroy({ where: { AccountId, id } });
+
+    if (isIncomeDeleted !== 0) {
+      response.send({ message: 'income details are deleted' });
+    } else {
+      response.send(new ErrorBuilder(400, 'something went wrong', 'income doesn\'t exists'));
+    }
+  } catch (err) {
+    response.send(new ErrorBuilder(400, 'There is issues Exist', err || err?.message));
+  }
+}
+
+module.exports = { getIncomes, createIncomes, updateIncome, deleteIncome };
