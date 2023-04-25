@@ -10,18 +10,19 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate (models) {
-      const { Account } = models;
+      const { Account, ExpenseCategory } = models;
+
       this.belongsTo(Account, {
         allowNull: false
       });
+      this.belongsTo(ExpenseCategory, { allowNull: false });
 
       // define association here
     }
   }
   Expense.init({
     description: DataTypes.STRING,
-    amount: DataTypes.STRING,
-    category: DataTypes.STRING
+    amount: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'Expense'

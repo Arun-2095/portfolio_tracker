@@ -79,7 +79,7 @@ const createAccount = async (request, response) => {
       });
 
       for (const expense of expenses) {
-        await userAccount.createExpense(expense, { transaction: t });
+        await userAccount.createExpenseCategory(expense, { transaction: t });
       }
 
       for (const income of incomes) {

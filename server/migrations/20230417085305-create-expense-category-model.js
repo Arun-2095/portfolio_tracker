@@ -4,28 +4,15 @@ module.exports = {
   async up (queryInterface, Sequelize) {
     const transaction = await queryInterface.sequelize.transaction();
     try {
-      await queryInterface.createTable('Investments', {
+      await queryInterface.createTable('expenseCategory', {
         id: {
           allowNull: false,
           autoIncrement: true,
           primaryKey: true,
           type: Sequelize.INTEGER
         },
-        amount: {
-          type: Sequelize.STRING
-        },
-        description: {
-          type: Sequelize.STRING
-        },
         category: {
           type: Sequelize.STRING
-        },
-        accountId: {
-          type: Sequelize.INTEGER,
-          reference: {
-            model: 'Accounts',
-            key: 'id'
-          }
         },
         createdAt: {
           allowNull: false,
@@ -35,8 +22,22 @@ module.exports = {
           allowNull: false,
           type: Sequelize.DATE
         }
+      }, { transaction });
+
+      await queryInterface.addConstraint('expenseCategory', {
+        fields: ['AccountId'],
+        type: 'foreign key',
+        references: {
+          table: 'Accounts',
+          field: 'id'
+        },
+        onDelete: 'cascade',
+        onUpdate: 'cascade'
+      }, {
+        transaction
       });
-      queryInterface.addConstraint('Investments', {
+
+      await queryInterface.addConstraint('Incomes', {
         fields: ['AccountId'],
         type: 'foreign key',
         references: {
@@ -49,18 +50,15 @@ module.exports = {
         transaction
       });
       await transaction.commit();
-    } catch (error) {
+    } catch (err) {
       await transaction.rollback();
-      throw error;
     }
   },
   async down (queryInterface, Sequelize) {
     const transaction = await queryInterface.sequelize.transaction();
-
     try {
-      await queryInterface.dropTable('Investments', { transaction });
-
-      await queryInterface.removeConstraint('Investments', {
+      await queryInterface.dropTable('expenseCategory', { transaction });
+      await queryInterface.removeConstraint('expenseCategory', {
         fields: ['AccountId'],
         type: 'foreign key',
         references: {
@@ -72,10 +70,10 @@ module.exports = {
       }, {
         transaction
       });
+
       await transaction.commit();
-    } catch (error) {
+    } catch (err) {
       await transaction.rollback();
-      throw error;
     }
   }
 };

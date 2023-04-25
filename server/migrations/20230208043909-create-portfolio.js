@@ -41,7 +41,7 @@ module.exports = {
 
       // adding forignKey Constraints
 
-      queryInterface.addConstraint('Portfolio', {
+      queryInterface.addConstraint('portfolio', {
         fields: ['UserId'],
         type: 'foreign key',
         references: {
@@ -54,7 +54,7 @@ module.exports = {
         transaction
       });
 
-      queryInterface.addConstraint('Portfolio', {
+      queryInterface.addConstraint('portfolio', {
         fields: ['AccountId'],
         type: 'foreign key',
         references: {
@@ -78,7 +78,7 @@ module.exports = {
     try {
       await queryInterface.dropTable('portfolio', { transaction });
 
-      queryInterface.removeConstraint('Portfolio', {
+      queryInterface.removeConstraint('portfolio', {
         fields: ['UserId'],
         type: 'foreign key',
         references: {
@@ -91,7 +91,7 @@ module.exports = {
         transaction
       });
 
-      queryInterface.addConstraint('Portfolio', {
+      queryInterface.addConstraint('portfolio', {
         fields: ['AccountId'],
         type: 'foreign key',
         references: {

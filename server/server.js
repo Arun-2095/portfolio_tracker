@@ -10,6 +10,7 @@ const accountRouter = requireWrapper('modules/Account/router.js');
 
 const incomeRouter = requireWrapper('modules/Income/router.js');
 
+const expenseRouter = requireWrapper('modules/Expense/router.js');
 const App = Express();
 
 App.use(Express.json());
@@ -20,11 +21,13 @@ App.use('/account', accountRouter);
 
 App.use('/income', incomeRouter);
 
+App.use('/expense', expenseRouter);
+
 App.listen(process.env.SERVER_PORT, () => {
   console.log(`Server running in ${process.env.SERVER_PORT}`);
   sequelize.query('SET FOREIGN_KEY_CHECKS = 0').then(function () {
     sequelize
-      .sync().success(function () {
+      .sync({ alter: true }).success(function () {
         sequelize.query('SET FOREIGN_KEY_CHECKS = 1').then(function () {
           console.log('Database synchronised.');
         });

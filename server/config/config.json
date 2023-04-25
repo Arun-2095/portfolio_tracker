@@ -1,10 +1,10 @@
 {
   "development": {
     "username": "root",
-    "password": "password",
+    "password": "doodleblue",
     "database": "portfolio",
     "host": "127.0.0.1",
-    "port": "9000",
+    "port": "3306",
     "dialect": "mysql"
   },
   "test": {
