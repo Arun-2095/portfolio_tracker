@@ -8,7 +8,9 @@ class AuthorizationClass {
       const token = jwt.sign({ user: data }, process.env.SECRET_PRIVATE_KEY, {
         expiresIn: 60 * 60
       });
-      response.status(200).send({ message: 'Register Success', token });
+      // response;
+      response.redirect('http://localhost:5173/dashboard?token=' + token);
+      // response.status(200).send({ message: 'Register Success', token });
     } catch (err) {
       response.send(new ErrorBuilder(422, 'failed in token validation', err.message));
     }
