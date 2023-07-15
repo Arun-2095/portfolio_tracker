@@ -4,7 +4,7 @@ module.exports = {
   async up (queryInterface, Sequelize) {
     const transaction = await queryInterface.sequelize.transaction();
     try {
-      await queryInterface.createTable('expenseCategory', {
+      await queryInterface.createTable('ExpenseCategory', {
         id: {
           allowNull: false,
           autoIncrement: true,
@@ -24,7 +24,7 @@ module.exports = {
         }
       }, { transaction });
 
-      await queryInterface.addConstraint('expenseCategory', {
+      await queryInterface.addConstraint('ExpenseCategory', {
         fields: ['AccountId'],
         type: 'foreign key',
         references: {
@@ -57,8 +57,8 @@ module.exports = {
   async down (queryInterface, Sequelize) {
     const transaction = await queryInterface.sequelize.transaction();
     try {
-      await queryInterface.dropTable('expenseCategory', { transaction });
-      await queryInterface.removeConstraint('expenseCategory', {
+      await queryInterface.dropTable('ExpenseCategory', { transaction });
+      await queryInterface.removeConstraint('ExpenseCategory', {
         fields: ['AccountId'],
         type: 'foreign key',
         references: {
