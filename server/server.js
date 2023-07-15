@@ -2,6 +2,7 @@
 require('dotenv').config();
 require('./utils/globalMethods');
 const Express = require('express');
+console.log(process.env, 'ENVS');
 const { sequelize } = require('./models');
 
 const userRouter = requireWrapper('modules/User/router.js');
