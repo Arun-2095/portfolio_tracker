@@ -1,0 +1,9 @@
+{
+    "apps": [
+      {
+        "name": "expenseFrontend",
+        "script": "npm",
+        "args": ["run" ,"dev"]
+      }
+    ]
+  }
