@@ -16,6 +16,8 @@ const App = Express();
 
 App.use(Express.json());
 
+App.use(Express.static('public'));
+
 App.use('/auth', userRouter);
 
 App.use('/account', accountRouter);
